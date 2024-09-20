@@ -1,47 +1,60 @@
 package com.example.lab2
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.lab2.ui.theme.Lab2Theme
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import kotlin.math.abs
 
-class MainActivity : ComponentActivity() {
+class MainActivity: AppCompatActivity() {
+
+    private lateinit var epsilonInput: EditText
+    private lateinit var resultView: TextView
+    private lateinit var calculateButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            Lab2Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+        setContentView(R.layout.activity_main)
+
+        epsilonInput = findViewById(R.id.editTextNumberDecimal)
+        resultView = findViewById(R.id.resultText)
+        calculateButton = findViewById(R.id.calculateButton)
+
+        calculateButton.setOnClickListener {
+            val epsilon = epsilonInput.text.toString().toDoubleOrNull()
+
+            if (epsilon != null && epsilon > 0) {
+                val result = calculateSeriesSum(epsilon)
+                resultView.text = result
+            } else {
+                resultView.text = "Пожалуйста, введите допустимое значение для порога."
             }
         }
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Lab2Theme {
-        Greeting("Android")
+    private fun factorial(n: Int): Double {
+        if (n == 0) {
+            return 1.0
+        } else {
+            return n * factorial(n - 1)
+        }
     }
+    private fun calculateSeriesSum(epsilon: Double): String {
+        println("im here!")
+        println(epsilon)
+        var sum = 0.0
+        var term: Double
+        var n = 1
+        var iterations = 0
+
+        do {
+            term = 1.0 / factorial(n)
+            sum += term
+            n += 2
+            iterations ++
+        } while(term > epsilon)
+        return "Сумма: $sum\nПоследнее слагаемое: $term\nЧисло итераций: $iterations"
+    }
+
 }
+
